@@ -2,12 +2,15 @@ const path = require("path");
 const { gray, green, yellow } = require("kleur");
 const stripColor = require("strip-color");
 
+// TODO move these into plugin options instead
 const FOLDER_ICON = "↘ ";
 const FOLDER_ICON_SINGLE = "→ ";
 const FILE_ICON = "• ";
 
+// TODO move these into plugin options instead
 const MAX_FOLDER_LENGTH = 20;
 const MAX_FILENAME_LENGTH = 30;
+
 const SPECIAL_FILE_KEY = "file:"
 
 // TODO remove input directory from every entry in column 2
