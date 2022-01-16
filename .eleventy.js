@@ -41,9 +41,10 @@ function truncate(str, maxLength) {
 }
 
 class Directory {
-  constructor() {
+  constructor(options) {
     this.output = [];
     this.compileBenchmarksReported = {};
+    this.options = options;
   }
 
   setConfigDirectories(dirs) {
@@ -68,11 +69,20 @@ class Directory {
 
     for(let line of this.output) {
       let [location, inputFile, size, renderTime] = line;
-      console.log(
+      let cols = [
         padLeftAlign(location, colMax[0] + 2),
         padLeftAlign(inputFile ? `${inputFile}` : gray("--"), colMax[1] + 2),
-        padRightAlign(size || gray("--"), colMax[2] + 2),
-        padRightAlign(renderTime ? renderTime : gray("--"), colMax[3] + 2),
+      ];
+      // TODO yellow/red color if larger than X KB
+      if(this.options.columns && this.options.columns.filesize !== false) {
+        cols.push(padRightAlign(size || gray("--"), colMax[2] + 2));
+      }
+      if(this.options.columns && this.options.columns.benchmark !== false) {
+        cols.push(padRightAlign(renderTime ? renderTime : gray("--"), colMax[3] + 2));
+      }
+
+      console.log(
+        ...cols
       );
     }
   }
@@ -189,9 +199,10 @@ class Directory {
   }
 }
 
-module.exports = function(eleventyConfig) {
-  // TODO opt-out of this? remove this?
-  eleventyConfig.setQuietMode(true);
+module.exports = function(eleventyConfig, opts = {}) {
+  let options = Object.assign({
+    columns: {}
+  }, opts);
 
   let configDirs = {};
   eleventyConfig.on("eleventy.directories", function(dirs) {
@@ -203,7 +214,7 @@ module.exports = function(eleventyConfig) {
     results = {};
   });
   eleventyConfig.on("eleventy.after", function() {
-    let d = new Directory();
+    let d = new Directory(options);
     d.setConfigDirectories(configDirs);
     d.parseResults(results);
     d.print();
@@ -241,9 +252,8 @@ module.exports = function(eleventyConfig) {
     let obj = {
       input: inputLocation,
       output: outputLocation,
-      // TODO yellow/red color if larger than X KB
       size: content.length,
-      benchmarks: getBenchmarks(this.inputPath, this.outputPath)
+      benchmarks: getBenchmarks(this.inputPath, this.outputPath),
     };
 
     let target = results;
@@ -253,6 +263,6 @@ module.exports = function(eleventyConfig) {
       }
       target = target[dir];
     }
-    target[`file:${outputLocation.filename}`] = obj;
+    target[`${SPECIAL_FILE_KEY}${outputLocation.filename}`] = obj;
   });
 }
