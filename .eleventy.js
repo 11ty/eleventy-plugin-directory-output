@@ -1,5 +1,5 @@
 const path = require("path");
-const { gray, green } = require("kleur");
+const { gray, green, yellow } = require("kleur");
 const stripColor = require("strip-color");
 
 const FOLDER_ICON = "↘ ";
@@ -87,12 +87,16 @@ class Directory {
     }
   }
 
-  static displayTime(ms) {
+  displayTime(ms) {
     return !isNaN(ms) ? ms.toFixed(1) + "ms" : "";
   }
 
-  static displayFileSize(size) {
-    return (size / 1000).toFixed(1) + "kB";
+  displayFileSize(size) {
+    let sizeStr = (size / 1000).toFixed(1) + "kB";
+    if(size && size > this.options.warningFileSize) {
+      return yellow(sizeStr);
+    }
+    return sizeStr;
   }
 
   static normalizeLocation(location) {
@@ -143,8 +147,8 @@ class Directory {
     return [
       `${padLeftAlign("", depth)}${icon}${prefix}${filename}`,
       `${meta.input.dir ? `${meta.input.dir}/` : ""}${meta.input.filename}`,
-      Directory.displayFileSize(meta.size),
-      Directory.displayTime(compileTime + meta.benchmarks.render),
+      this.displayFileSize(meta.size),
+      this.displayTime(compileTime + meta.benchmarks.render),
     ];
   }
 
@@ -201,6 +205,7 @@ class Directory {
 
 module.exports = function(eleventyConfig, opts = {}) {
   let options = Object.assign({
+    warningFileSize: 400 * 1000, // bytes
     columns: {}
   }, opts);
 
