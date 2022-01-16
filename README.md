@@ -35,7 +35,7 @@ Sample output from `eleventy-base-blog`:
 [11ty] Copied 3 files / Wrote 18 files in 0.16 seconds (8.9ms each, v1.0.1)
 ```
 
-## [The full `eleventy-plugin-directory-output` documentation is on 11ty.dev](https://www.11ty.dev/docs/plugins/rss/).
+## [The full `eleventy-plugin-directory-output` documentation is on 11ty.dev](https://www.11ty.dev/docs/plugins/directory-output/).
 
 * _This is a plugin for the [Eleventy static site generator](https://www.11ty.dev/)._
 * Find more [Eleventy plugins](https://www.11ty.dev/docs/plugins/).
