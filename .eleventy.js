@@ -253,6 +253,9 @@ module.exports = function(eleventyConfig, opts = {}) {
   }
 
   eleventyConfig.addLinter("directory-output", function(content) {
+    if(this.outputPath === false) {
+      return;
+    }
     let inputLocation = Directory.normalizeLocation(this.inputPath);
     let outputLocation = Directory.normalizeLocation(this.outputPath);
     let [...dirs] = outputLocation.dir.split(path.sep);
