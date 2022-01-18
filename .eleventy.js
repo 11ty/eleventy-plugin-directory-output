@@ -253,7 +253,7 @@ module.exports = function(eleventyConfig, opts = {}) {
   }
 
   eleventyConfig.addLinter("directory-output", function(content) {
-    if(this.outputPath === false) {
+    if(this.outputPath === false || typeof content !== "string") {
       return;
     }
     let inputLocation = Directory.normalizeLocation(this.inputPath);
