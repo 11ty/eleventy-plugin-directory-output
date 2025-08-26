@@ -230,20 +230,39 @@ module.exports = function(eleventyConfig, opts = {}) {
 
   function getBenchmarks(inputPath, outputPath) {
     let benchmarks = {};
-    let keys = {
+    let keysV1 = {
       render: `> Render > ${outputPath}`,
       compile: `> Compile > ${inputPath}`,
+    };
+
+    let keysV2 = {
+      render: `> Render > ${inputPath}`,
+      compile: `> Compile > ${inputPath}`,
+    };
+
+    let keysV3 = {
+      render: `> Render Content > ${inputPath}`,
+      compile: `> Compile Content > ${inputPath}`,
     };
 
     if(eleventyConfig.benchmarkManager) {
       let benchmarkGroup = eleventyConfig.benchmarkManager.get("Aggregate");
 
-      if("has" in benchmarkGroup && benchmarkGroup.has(keys.render)) {
+      let keys;
+      if("has" in benchmarkGroup && benchmarkGroup.has(keysV3.render)) {
+        keys = keysV3;
+      } else if("has" in benchmarkGroup && benchmarkGroup.has(keysV2.render)) {
+        keys = keysV2;
+      } else if("has" in benchmarkGroup && benchmarkGroup.has(keysV1.render)) {
+        keys = keysV1;
+      }
+
+      if(keys && benchmarkGroup.has(keys.compile)) {
         let b1 = benchmarkGroup.get(keys.render);
         benchmarks.render = b1.getTotal();
       }
 
-      if("has" in benchmarkGroup && benchmarkGroup.has(keys.compile)) {
+      if(keys && benchmarkGroup.has(keys.compile)) {
         let b2 = benchmarkGroup.get(keys.compile);
         benchmarks.compile = b2.getTotal();
       }
